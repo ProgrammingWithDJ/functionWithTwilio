@@ -25,6 +25,7 @@ namespace functionWithTwilio
 
             string toPhoneNumber = Environment.GetEnvironmentVariable("ToPhoneNumber", EnvironmentVariableTarget.Process);
             string fromPhoneNumber = Environment.GetEnvironmentVariable("FromPhoneNumber", EnvironmentVariableTarget.Process);
+            string apiKeydemo = Environment.GetEnvironmentVariable("apiKey", EnvironmentVariableTarget.Process);
 
             var message = new CreateMessageOptions(new PhoneNumber(toPhoneNumber));
             log.LogInformation("C# HTTP trigger function processed a request.");
@@ -37,9 +38,9 @@ namespace functionWithTwilio
 
             //double threshold = Convert.ToDouble(req.Query["threshold"]);
 
+            string stockName = "Zomato.BSE";
 
-
-            string requestUrl = $"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=Zomato.BSE&apikey=";
+            string requestUrl = $"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol="+stockName+"&apikey="+apiKeydemo;
 
             var httpClient = new HttpClient();
 
@@ -55,11 +56,11 @@ namespace functionWithTwilio
                 JsonElement mostRecentWeek = weeklyTimeSeries.EnumerateObject().First().Value;
                 string openPrice = mostRecentWeek.GetProperty("1. open").GetString();
 
-                Console.WriteLine($"Most recent week open price: {openPrice}");
+               
                 message = new CreateMessageOptions(new PhoneNumber(toPhoneNumber))
                 {
                     From = new PhoneNumber(fromPhoneNumber),
-                    Body = $"Hello from DJ's most recent Application, the stock price today is: {openPrice}"
+                    Body = $"Hello from DJ's most recent Application, the stock price for {stockName} today is: {openPrice}"
                 };
 
             }
